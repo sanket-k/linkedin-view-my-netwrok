@@ -1,0 +1,11 @@
+# Personal LinkedIn data — never commit (contains real names / emails)
+Connections.csv
+data.js
+linkedin-data/
+
+# macOS
+.DS_Store
+
+# Editors / OS cruft
+*.swp
+Thumbs.db
