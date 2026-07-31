@@ -6,8 +6,8 @@
 (function () {
   'use strict';
 
-  const PEOPLE = (window.CONNECTIONS || []).filter(p => p.name || p.company);
-  const SUMMARY = window.SUMMARY || {};
+  let PEOPLE = [];
+  let SUMMARY = {};
 
   /* ----- sector palette (kept in sync with styles.css) ----- */
   const SECTOR_COLORS = {
@@ -52,8 +52,7 @@
     refreshGraphColors(); // function declarations are hoisted; defined further down
   }
   applyTheme(preferredTheme()); // mirror the head script (covers no-JS-cache / changed-pref cases)
-  const themeBtn = $('#theme-toggle');
-  if (themeBtn) themeBtn.addEventListener('click', toggleTheme);
+  $$('[data-theme-toggle]').forEach(b => b.addEventListener('click', toggleTheme));
   const initials = name => (name || '?').trim().split(/\s+/).map(w => w[0]).slice(0, 2).join('').toUpperCase();
   // deterministic avatar gradient from a string
   function avatarStyle(name) {
@@ -86,9 +85,13 @@
     company: '', position: '', sort: 'recent', year: '',
   };
 
-  // ordered sector + category lists (by frequency)
-  const SECTORS = Object.keys(SUMMARY.sectors || {}).filter(s => s !== 'Other').concat(['Other']).filter(s => (SUMMARY.sectors || {})[s]);
-  const CATEGORIES = Object.keys(SUMMARY.categories || {});
+  // ordered sector + category lists (by frequency) — recomputed when data loads
+  let SECTORS = [];
+  let CATEGORIES = [];
+  function computeFacets() {
+    SECTORS = Object.keys(SUMMARY.sectors || {}).filter(s => s !== 'Other').concat(['Other']).filter(s => (SUMMARY.sectors || {})[s]);
+    CATEGORIES = Object.keys(SUMMARY.categories || {});
+  }
 
   function buildFilterUI() {
     // sector chips
@@ -548,6 +551,83 @@
     const initial = (location.hash || '').replace('#', '') || (new URLSearchParams(location.search).get('view') || '');
     if (initial === 'graph') switchView('graph');
   }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
-  else boot();
+
+  /* ----- data intake: drop / pick / sample ----- */
+  function initApp(connections, summary) {
+    PEOPLE = (connections || []).filter(p => p.name || p.company);
+    SUMMARY = summary || {};
+    computeFacets();
+    const landing = document.getElementById('landing');
+    if (landing) landing.hidden = true;
+    boot();
+  }
+  window.ConnectionsApp = { initApp };
+
+  function showLandingError(msg) {
+    const el = document.getElementById('drop-error');
+    if (!el) return;
+    el.textContent = msg;
+    el.hidden = false;
+  }
+
+  function handleFile(file) {
+    if (!file) return;
+    if (!/\.csv$/i.test(file.name) && !/csv/i.test(file.type || '')) {
+      showLandingError('That doesn’t look like a .csv — please drop your LinkedIn Connections.csv.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const out = window.ConnectionsParser.parse(reader.result);
+        if (!out || !out.connections || !out.connections.length) throw new Error('No connection rows found in this file.');
+        initApp(out.connections, out.summary);
+      } catch (ex) {
+        showLandingError('Couldn’t read that file: ' + ((ex && ex.message) || ex));
+      }
+    };
+    reader.onerror = () => showLandingError('Could not read the file. Please try again.');
+    reader.readAsText(file);
+  }
+
+  function loadSample() {
+    try {
+      const out = window.ConnectionsParser.parse(window.ConnectionsParser.SAMPLE_CSV);
+      initApp(out.connections, out.summary);
+    } catch (ex) {
+      showLandingError('Sample data failed to load: ' + ((ex && ex.message) || ex));
+    }
+  }
+
+  function setupLanding() {
+    const landing = document.getElementById('landing');
+    if (!landing) return;
+    const dz = document.getElementById('dropzone');
+    const input = document.getElementById('file-input');
+
+    if (dz) {
+      dz.addEventListener('click', e => { if (e.target.id !== 'browse-btn') input && input.click(); });
+      dz.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); input && input.click(); } });
+    }
+    const browse = document.getElementById('browse-btn');
+    if (browse) browse.addEventListener('click', e => { e.stopPropagation(); input && input.click(); });
+    if (input) input.addEventListener('change', () => { if (input.files && input.files[0]) handleFile(input.files[0]); });
+    const sample = document.getElementById('sample-btn');
+    if (sample) sample.addEventListener('click', loadSample);
+
+    // drop anywhere on the page while the landing is still showing
+    let depth = 0;
+    window.addEventListener('dragenter', e => { if (landing.hidden) return; e.preventDefault(); depth++; dz && dz.classList.add('drag'); });
+    window.addEventListener('dragover', e => { if (landing.hidden) return; e.preventDefault(); });
+    window.addEventListener('dragleave', () => { depth = Math.max(0, depth - 1); if (depth === 0) dz && dz.classList.remove('drag'); });
+    window.addEventListener('drop', e => {
+      e.preventDefault(); depth = 0; dz && dz.classList.remove('drag');
+      if (landing.hidden) return;
+      const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+      if (f) handleFile(f);
+    });
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setupLanding);
+  else setupLanding();
 })();

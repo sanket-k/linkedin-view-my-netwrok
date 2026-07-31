@@ -317,3 +317,58 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }
+
+/* ===================== LANDING / DROP ===================== */
+.landing {
+  position: fixed; inset: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: center; padding: 24px;
+  background: var(--bg); background-image: var(--bg-glow);
+  overflow-y: auto;
+}
+.landing[hidden] { display: none; } /* `hidden` must beat display:flex */
+
+.landing-card {
+  position: relative; width: 100%; max-width: 480px;
+  padding: 30px 28px 26px; border-radius: var(--radius);
+  background: var(--panel); border: 1px solid var(--border);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  box-shadow: var(--shadow);
+}
+.landing-theme { position: absolute; top: 16px; right: 16px; }
+
+.landing-brand { display: flex; align-items: center; gap: 13px; margin-bottom: 22px; }
+.landing-brand .brand-mark { width: 42px; height: 42px; border-radius: 12px; }
+.landing-brand h1 { font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 700; letter-spacing: -0.01em; }
+.landing-brand p { font-size: 12.5px; color: var(--text-dim); margin-top: 2px; }
+
+.dropzone {
+  border: 1.5px dashed var(--border-strong); border-radius: var(--radius);
+  padding: 30px 20px 22px; text-align: center; color: var(--text-dim);
+  transition: border-color .18s ease, background .18s ease, transform .18s ease, box-shadow .18s ease;
+  cursor: pointer;
+}
+.dropzone svg { color: var(--accent); opacity: .9; margin-bottom: 6px; }
+.dropzone:hover, .dropzone:focus-visible { border-color: var(--accent); background: var(--accent-soft); outline: none; }
+.dropzone.drag { border-color: var(--accent); background: var(--accent-soft); transform: scale(1.01); box-shadow: 0 0 0 4px var(--ring); }
+.dz-title { font-size: 14.5px; font-weight: 600; color: var(--text); }
+.dz-title code, .how-to code { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: .92em; color: var(--accent); }
+.dz-sub { font-size: 12.5px; color: var(--text-mute); margin-top: 5px; }
+.drop-error { margin-top: 12px; font-size: 12.5px; color: var(--danger); font-weight: 500; }
+
+.landing-actions { display: flex; justify-content: center; margin-top: 14px; }
+.landing-actions .ghost-btn { flex: 0 0 auto; padding: 9px 18px; }
+
+.privacy { list-style: none; margin: 22px 0 0; display: flex; flex-direction: column; gap: 10px; }
+.privacy li { display: flex; align-items: flex-start; gap: 9px; font-size: 12.5px; color: var(--text-dim); line-height: 1.5; }
+.privacy li span:first-child { flex-shrink: 0; width: 18px; text-align: center; }
+.privacy b { color: var(--text); }
+
+.how-to { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border); }
+.how-to summary { cursor: pointer; font-size: 12.5px; font-weight: 600; color: var(--text-dim); }
+.how-to summary:hover { color: var(--text); }
+.how-to p { font-size: 12px; color: var(--text-mute); line-height: 1.6; margin-top: 8px; }
+
+@media (max-width: 880px) {
+  .landing { padding: 14px; align-items: flex-start; }
+  .landing-card { padding: 24px 18px 20px; margin-top: 8px; }
+}
