@@ -9,6 +9,11 @@ Connections Explorer turns the raw `Connections.csv` you can export from LinkedI
 
 It's a single static web page — no backend, no database, no account, no build step.
 
+<p align="center">
+  <img src="public/landing-page.png" alt="Connections Explorer landing page — drop your Connections.csv" width="880">
+</p>
+<p align="center"><em>The landing page: drop your CSV, pick a file, or try it with sample data — all parsed locally.</em></p>
+
 ---
 
 ## Table of contents
@@ -277,6 +282,10 @@ Both rule tables live in **`parse.js`** (browser) and **`build_data.py`** (refer
 ### 1. Directory & Filters
 A left-hand filter panel + a responsive card grid. Filters compose: **search** (name/company/position), multi-select **sector** and **role-category** chips (with live counts, frequency-ordered), **Company** / **Position** A–Z dropdowns, **sort** (recent / name / company / position), and **connected-since year**. Cards show an initials avatar, name → LinkedIn link, position, company + sector dot, a filled sector tag and outlined role tag, and the connection date. (Grid is capped at 400 cards with a "+N more — narrow your filters" footer to stay snappy on big networks.)
 
+<p align="center">
+  <img src="public/main-page-view.png" alt="Directory & Filters view — left filter panel plus a responsive card grid" width="880">
+</p>
+
 ### 2. Network Graph (hub-and-spoke)
 A full-bleed D3 force layout. **Group by** three modes:
 
@@ -286,6 +295,10 @@ A full-bleed D3 force layout. **Group by** three modes:
 | **Position** | each exact job title | title-level clusters |
 | **Role** | each role family | all PM variants merge into one **Product** hub |
 
+<p align="center">
+  <img src="public/main-page-social-graph.png" alt="Network Graph view — company hubs in a D3 force-directed hub-and-spoke layout" width="880">
+</p>
+
 Hubs are sized by headcount (`r = 10 + √count·4.2`), colored by their members' dominant sector, and labeled with a count. Each person is a small dot linked to their hub. **Drag** nodes, **scroll** to zoom, **pan**, **hover** for a tooltip, **click a hub** to isolate it (detail panel lists members with LinkedIn links), **click a person** to open their LinkedIn.
 
 Controls: role/sector filter dropdowns, a **min-connections-per-hub slider** (1–10, default 3 — raise it to declutter), and a **focus-a-hub** search. *Re-layout* and *Fit to screen* buttons, a color legend, and live stats.
@@ -293,33 +306,6 @@ Controls: role/sector filter dropdowns, a **min-connections-per-hub slider** (1�
 **Deep-linking:** share a specific view — `?view=graph&mode=category&category=Product&min=1` — or use the URL hash `#directory` / `#graph`.
 
 **Performance guard:** when a graph exceeds 1000 nodes the simulation switches to faster settle parameters (`alphaDecay 0.06`, `velocityDecay 0.35`) and shows a "Large graph — settling" note. Nothing is truncated.
-
----
-
-## Deploying (Vercel / Netlify)
-
-Because it's a static site, deployment is trivial and free.
-
-```mermaid
-flowchart LR
-    Repo["Git repo<br/>(code only — no CSV)"] --> Platform{"Vercel or Netlify?"}
-    Platform -->|Netlify| N["Drag the folder, or connect repo<br/>→ deploy instantly"]
-    Platform -->|Vercel| V["Framework Preset: Other<br/>Build Command: (none)<br/>Output Directory: repo root"]
-    N --> Live["Live static site 🚀<br/>free · instant · infinitely scalable"]
-    V --> Live
-```
-
-**Netlify:**
-- Easiest: drag the project folder onto [app.netlify.com/drop](https://app.netlify.com/drop), **or**
-- Connect the Git repo → deploy. No config needed.
-
-**Vercel:**
-- `npm i -g vercel && vercel` in the folder, **or** connect the repo.
-- When prompted: **Framework Preset → Other**, **Build Command → (leave empty)**, **Output Directory → `.` (repo root)**.
-
-> Since the repo contains no personal data (CSVs are gitignored), the deployed site ships only code — so the "nothing leaves your device" promise holds for every visitor, who drops *their own* file.
-
----
 
 ## Debugging & troubleshooting
 
