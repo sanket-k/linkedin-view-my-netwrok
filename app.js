@@ -582,6 +582,7 @@
         const out = window.ConnectionsParser.parse(reader.result);
         if (!out || !out.connections || !out.connections.length) throw new Error('No connection rows found in this file.');
         initApp(out.connections, out.summary);
+        if (window.ceTrack) window.ceTrack('csv-loaded');
       } catch (ex) {
         showLandingError('Couldn’t read that file: ' + ((ex && ex.message) || ex));
       }
@@ -594,6 +595,7 @@
     try {
       const out = window.ConnectionsParser.parse(window.ConnectionsParser.SAMPLE_CSV);
       initApp(out.connections, out.summary);
+      if (window.ceTrack) window.ceTrack('sample-loaded');
     } catch (ex) {
       showLandingError('Sample data failed to load: ' + ((ex && ex.message) || ex));
     }

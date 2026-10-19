@@ -57,12 +57,12 @@ This is the core design principle and it's verifiable, not just a promise:
 flowchart LR
     You["🧑 You + Connections.csv"] --> Browser["Your browser<br/>(parse.js classifies locally)"]
     Browser --> You2["🎨 Rendered explorer"]
-    Server["❌ No server<br/>❌ No upload<br/>❌ No analytics"] .->|nothing leaves| Browser
+    Server["❌ No server<br/>❌ No upload<br/>❌ No cookies / no personal data"] .->|nothing leaves| Browser
     classDef safe fill:#2dd4a7,stroke:#0a0e1a,color:#0a0e1a;
     class Browser,You2 safe;
 ```
 
-**Prove it to yourself:** open your browser's DevTools → **Network** tab, then drop your CSV. The only requests you'll ever see are the initial CDN script loads (`papaparse`, `d3`). Your connection data **never appears in any network request**. You can even save the page and run it with the internet unplugged.
+**Prove it to yourself:** open your browser's DevTools → **Network** tab, then drop your CSV. The only requests you'll ever see are the CDN script loads (`papaparse`, `d3`) and, if enabled, one anonymous cookieless page-view ping to [GoatCounter](https://www.goatcounter.com) (`analytics.js`; also two named events, `csv-loaded` and `sample-loaded`, with no payload). It is skipped on localhost and when Do Not Track is on. Your connection data **never appears in any network request**. You can even save the page and run it with the internet unplugged.
 
 The repo itself ships **no personal data** — `Connections.csv`, generated `data.js`, and the `linkedin-data/` archive are all gitignored and excluded from deploy. (See [Debugging](#debugging--troubleshooting) → "Verifying privacy".)
 
