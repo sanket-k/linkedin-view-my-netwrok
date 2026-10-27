@@ -48,13 +48,16 @@
         <path d="M7 10l5-5 5 5"/><path d="M12 5v12"/>
       </svg>
       <p class="dz-title">Drop your <code>Connections.csv</code> here</p>
-      <p class="dz-sub">or <button id="browse-btn" class="link-btn" type="button">browse for a file</button></p>
+      <p class="dz-sub">or <button id="browse-btn" class="link-btn" type="button">browse for a file</button> · <button id="drop-guide-btn" class="link-btn" type="button">how to get it</button></p>
       <input id="file-input" type="file" accept=".csv,text/csv" hidden />
       <p id="drop-error" class="drop-error" hidden></p>
     </div>
 
     <div class="landing-actions">
       <button id="sample-btn" class="ghost-btn" type="button">Try it with sample data</button>
+      <button class="ghost-btn" type="button" data-tally-open="YjjMZJ" data-tally-layout="modal" data-tally-width="440" data-tally-emoji-text="✨" data-tally-emoji-animation="wave">
+        ✨ Join AI Waitlist
+      </button>
     </div>
 
     <ul class="privacy">
@@ -63,9 +66,118 @@
       <li><span>⚡</span><span><b>Runs offline.</b> Save the page and it still works with no internet connection.</span></li>
     </ul>
 
-    <details class="how-to">
-      <summary>How do I get my Connections.csv?</summary>
-      <p>In LinkedIn, go to <b>Settings &amp; Privacy</b> → <b>Data Privacy</b> → <b>Get a copy of your data</b> → choose <b>Connections</b> → request the archive. LinkedIn emails you a ZIP containing <code>Connections.csv</code>. Drop that file above.</p>
+    <details class="how-to" id="guide-details">
+      <summary class="how-to-summary">
+        <div class="how-to-title-group">
+          <span class="how-to-label">How do I get my Connections.csv?</span>
+          <span class="guide-badge">Visual Guide (3 steps)</span>
+        </div>
+      </summary>
+      <div class="how-to-body">
+        <div class="how-to-top-bar">
+          <p class="how-to-desc">
+            LinkedIn lets you export all your connections for free. It takes about 1 minute to request:
+          </p>
+          <button type="button" class="close-guide-link close-guide-btn" title="Close guide and return to main screen">
+            ✕ Close guide
+          </button>
+        </div>
+
+        <div class="guide-stepper" role="tablist" aria-label="LinkedIn CSV Walkthrough Steps">
+          <button type="button" class="guide-step-tab active" data-step="1" role="tab" aria-selected="true">
+            <span class="step-num">1</span> Request archive
+          </button>
+          <button type="button" class="guide-step-tab" data-step="2" role="tab" aria-selected="false">
+            <span class="step-num">2</span> Download ZIP
+          </button>
+          <button type="button" class="guide-step-tab" data-step="3" role="tab" aria-selected="false">
+            <span class="step-num">3</span> Upload CSV
+          </button>
+        </div>
+
+        <div class="guide-step-panels">
+          <!-- Step 1 Panel -->
+          <div class="guide-step-panel active" data-step="1" role="tabpanel">
+            <div class="guide-step-header">
+              <div>
+                <h4>Step 1: Request your data</h4>
+                <p>On LinkedIn's download page, select <b>Download larger data archive</b> (or choose <b>Connections</b>) and click <b>Request archive</b>.</p>
+              </div>
+              <a href="https://www.linkedin.com/mypreferences/d/download-my-data" target="_blank" rel="noopener noreferrer" class="guide-link-btn" title="Open LinkedIn Data Export in new tab">
+                Open LinkedIn ↗
+              </a>
+            </div>
+            <div class="guide-preview-card" data-open-modal="1" title="Click to enlarge screenshot">
+              <img src="public/images-walkthrough/step-1-request-archive.png" alt="Step 1: Request your data on LinkedIn" loading="lazy" />
+              <div class="guide-card-overlay">
+                <span>🔍 Click to enlarge</span>
+              </div>
+            </div>
+            <div class="step-nav-bar">
+              <button type="button" class="link-btn close-guide-btn">✕ Close guide</button>
+              <button type="button" class="ghost-btn-sm step-next-btn" data-go-step="2">Next: Download ZIP &rarr;</button>
+            </div>
+          </div>
+
+          <!-- Step 2 Panel -->
+          <div class="guide-step-panel" data-step="2" role="tabpanel" hidden>
+            <div class="guide-step-header">
+              <div>
+                <h4>Step 2: Download the ZIP</h4>
+                <p>LinkedIn prepares your archive and sends an email notification (usually 10–30 mins). Revisit the page and click <b>Download archive</b>.</p>
+              </div>
+              <a href="https://www.linkedin.com/mypreferences/d/download-my-data" target="_blank" rel="noopener noreferrer" class="guide-link-btn" title="Open LinkedIn Data Export in new tab">
+                Open LinkedIn ↗
+              </a>
+            </div>
+            <div class="guide-preview-card" data-open-modal="2" title="Click to enlarge screenshot">
+              <img src="public/images-walkthrough/step-2-download-zip.png" alt="Step 2: Download ZIP archive on LinkedIn" loading="lazy" />
+              <div class="guide-card-overlay">
+                <span>🔍 Click to enlarge</span>
+              </div>
+            </div>
+            <div class="step-nav-bar">
+              <button type="button" class="ghost-btn-sm step-prev-btn" data-go-step="1">&larr; Prev: Request data</button>
+              <button type="button" class="link-btn close-guide-btn">✕ Close guide</button>
+              <button type="button" class="ghost-btn-sm step-next-btn" data-go-step="3">Next: Upload CSV &rarr;</button>
+            </div>
+          </div>
+
+          <!-- Step 3 Panel -->
+          <div class="guide-step-panel" data-step="3" role="tabpanel" hidden>
+            <div class="guide-step-header">
+              <div>
+                <h4>Step 3: Find the CSV and upload it</h4>
+                <p>Unzip the downloaded folder on your computer. Look inside and drag only <code>Connections.csv</code> into the app.</p>
+              </div>
+            </div>
+            <div class="guide-callout warning">
+              <span class="guide-callout-icon">⚠️</span>
+              <div><b>One file to upload:</b> Drag only <code>Connections.csv</code>. <b>Never upload the .zip file directly.</b></div>
+            </div>
+            <div class="guide-preview-card" data-open-modal="3" title="Click to enlarge screenshot">
+              <img src="public/images-walkthrough/step-3-upload-csv.png" alt="Step 3: Extract and drag only Connections.csv" loading="lazy" />
+              <div class="guide-card-overlay">
+                <span>🔍 Click to enlarge</span>
+              </div>
+            </div>
+            <div class="step-nav-bar">
+              <button type="button" class="ghost-btn-sm step-prev-btn" data-go-step="2">&larr; Prev: Download ZIP</button>
+              <button type="button" class="modal-done-btn-sm close-guide-btn">▲ Back to upload</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="guide-footer-actions">
+          <button type="button" class="link-btn" id="open-full-guide-btn">
+            🖼️ View all 3 steps infographic overview
+          </button>
+          <div class="guide-footer-right">
+            <button type="button" class="ghost-btn-sm close-guide-btn">✕ Close guide</button>
+            <button type="button" class="ghost-btn-sm" id="guide-sample-btn">Try sample data &rarr;</button>
+          </div>
+        </div>
+      </div>
     </details>
   </div>
 </div>
@@ -95,6 +207,13 @@
         Network Graph
       </button>
     </nav>
+    <button id="header-guide-btn" class="ghost-btn" type="button" title="How to download LinkedIn Connections CSV">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+      CSV Guide
+    </button>
+    <button class="ghost-btn" type="button" data-tally-open="YjjMZJ" data-tally-layout="modal" data-tally-width="440">
+      ✨ AI Waitlist
+    </button>
     <button id="theme-toggle" class="theme-toggle" data-theme-toggle type="button" aria-label="Toggle light or dark theme" title="Toggle light / dark">
       <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
       <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
@@ -228,8 +347,79 @@
   </section>
 </main>
 
+<!-- ===================== GUIDE LIGHTBOX MODAL ===================== -->
+<div id="guide-modal" class="guide-modal" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="guide-modal-title">
+  <div class="guide-modal-backdrop" data-close-guide></div>
+  <div class="guide-modal-container">
+    <header class="guide-modal-header">
+      <div class="guide-modal-title-wrap">
+        <h3 id="guide-modal-title">How to get your LinkedIn Connections.csv</h3>
+        <p class="guide-modal-sub">3 annotated screenshots • from LinkedIn to Connections Explorer</p>
+      </div>
+      <div class="guide-modal-header-actions">
+        <button class="ghost-btn-sm modal-back-btn" data-close-guide title="Return to screen">
+          &larr; Back to main screen
+        </button>
+        <button class="guide-modal-close" data-close-guide aria-label="Close guide modal">&times;</button>
+      </div>
+    </header>
+
+    <nav class="guide-modal-nav">
+      <div class="guide-modal-tabs" role="tablist">
+        <button class="modal-tab active" data-modal-step="1" role="tab" aria-selected="true">Step 1: Request</button>
+        <button class="modal-tab" data-modal-step="2" role="tab" aria-selected="false">Step 2: Download</button>
+        <button class="modal-tab" data-modal-step="3" role="tab" aria-selected="false">Step 3: Upload</button>
+        <button class="modal-tab" data-modal-step="all" role="tab" aria-selected="false">Full Infographic</button>
+      </div>
+      <a href="https://www.linkedin.com/mypreferences/d/download-my-data" target="_blank" rel="noopener noreferrer" class="guide-link-btn" title="Open LinkedIn Data Export in new tab">
+        Open LinkedIn Settings ↗
+      </a>
+    </nav>
+
+    <div class="guide-modal-body">
+      <div class="guide-modal-slide active" data-slide="1">
+        <img src="public/images-walkthrough/step-1-request-archive.png" alt="Step 1: Request your data" />
+        <div class="slide-caption">
+          <strong>STEP 1 / 3: Request your data</strong> — Start from the direct LinkedIn data-download link, select larger data archive (or Connections), and click Request archive.
+        </div>
+      </div>
+      <div class="guide-modal-slide" data-slide="2" hidden>
+        <img src="public/images-walkthrough/step-2-download-zip.png" alt="Step 2: Download the ZIP" />
+        <div class="slide-caption">
+          <strong>STEP 2 / 3: Download the ZIP</strong> — LinkedIn will notify you by email when the archive is ready. Return to the page and click Download archive.
+        </div>
+      </div>
+      <div class="guide-modal-slide" data-slide="3" hidden>
+        <img src="public/images-walkthrough/step-3-upload-csv.png" alt="Step 3: Find the CSV and upload it" />
+        <div class="slide-caption">
+          <strong>STEP 3 / 3: Find the CSV and upload it</strong> — Unzip the download, open the extracted folder, and drag only <code>Connections.csv</code> into the app. Never upload the .zip file.
+        </div>
+      </div>
+      <div class="guide-modal-slide" data-slide="all" hidden>
+        <img src="public/images-walkthrough/connections-guide-preview.png" alt="Get your LinkedIn Connections.csv infographic" />
+        <div class="slide-caption">
+          <strong>Overview:</strong> 3 annotated screenshots from LinkedIn to Connections Explorer. One file to upload: <code>Connections.csv</code>.
+        </div>
+      </div>
+    </div>
+
+    <footer class="guide-modal-footer">
+      <div class="modal-stepper-controls">
+        <button type="button" class="ghost-btn-sm" id="modal-prev-btn" disabled>&larr; Previous</button>
+        <span id="modal-step-counter" class="modal-step-counter">Step 1 of 3</span>
+        <button type="button" class="ghost-btn-sm" id="modal-next-btn">Next &rarr;</button>
+      </div>
+      <div class="modal-footer-actions">
+        <button type="button" class="ghost-btn-sm" id="modal-sample-action-btn">Try sample data &rarr;</button>
+        <button type="button" class="modal-done-btn" data-close-guide>Back to main screen</button>
+      </div>
+    </footer>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5/papaparse.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<script async src="https://tally.so/widgets/embed.js"></script>
 <script src="analytics.js"></script>
 <script src="parse.js"></script>
 <script src="app.js"></script>

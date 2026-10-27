@@ -570,8 +570,23 @@
     el.hidden = false;
   }
 
+  function showLandingZipError() {
+    const el = document.getElementById('drop-error');
+    if (!el) return;
+    el.innerHTML = 'You dropped the <b>.zip</b> file! Please unzip it first and drag only <code>Connections.csv</code>. <button id="zip-guide-link" class="link-btn" type="button" style="text-decoration:underline;margin-left:4px;">See Step 3 Guide</button>';
+    el.hidden = false;
+    const btn = document.getElementById('zip-guide-link');
+    if (btn && window.openGuideModal) {
+      btn.addEventListener('click', () => window.openGuideModal('3'));
+    }
+  }
+
   function handleFile(file) {
     if (!file) return;
+    if (/\.zip$/i.test(file.name)) {
+      showLandingZipError();
+      return;
+    }
     if (!/\.csv$/i.test(file.name) && !/csv/i.test(file.type || '')) {
       showLandingError('That doesn’t look like a .csv — please drop your LinkedIn Connections.csv.');
       return;
@@ -601,14 +616,188 @@
     }
   }
 
+  function setupWalkthroughGuide() {
+    // 1. In-page stepper inside <details class="how-to">
+    const stepperTabs = document.querySelectorAll('.guide-step-tab');
+    const stepPanels = document.querySelectorAll('.guide-step-panel');
+
+    function switchStep(stepNum) {
+      stepperTabs.forEach(tab => {
+        const isMatch = tab.dataset.step === String(stepNum);
+        tab.classList.toggle('active', isMatch);
+        tab.setAttribute('aria-selected', isMatch ? 'true' : 'false');
+      });
+      stepPanels.forEach(panel => {
+        const isMatch = panel.dataset.step === String(stepNum);
+        panel.classList.toggle('active', isMatch);
+        panel.hidden = !isMatch;
+      });
+    }
+
+    stepperTabs.forEach(tab => {
+      tab.addEventListener('click', () => switchStep(tab.dataset.step));
+    });
+
+    // 2. Lightbox Modal
+    const modal = document.getElementById('guide-modal');
+    if (!modal) return;
+    const modalTabs = modal.querySelectorAll('.modal-tab');
+    const modalSlides = modal.querySelectorAll('.guide-modal-slide');
+    const stepCounter = document.getElementById('modal-step-counter');
+    const prevBtn = document.getElementById('modal-prev-btn');
+    const nextBtn = document.getElementById('modal-next-btn');
+    let currentModalSlide = '1';
+
+    const slideOrder = ['1', '2', '3', 'all'];
+
+    function showModalSlide(slideKey) {
+      currentModalSlide = String(slideKey);
+      modalTabs.forEach(tab => {
+        const active = tab.dataset.modalStep === currentModalSlide;
+        tab.classList.toggle('active', active);
+        tab.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+      modalSlides.forEach(slide => {
+        const active = slide.dataset.slide === currentModalSlide;
+        slide.classList.toggle('active', active);
+        slide.hidden = !active;
+      });
+
+      const idx = slideOrder.indexOf(currentModalSlide);
+      if (prevBtn) prevBtn.disabled = idx <= 0;
+      if (nextBtn) nextBtn.disabled = idx >= slideOrder.length - 1;
+
+      if (stepCounter) {
+        if (currentModalSlide === 'all') {
+          stepCounter.textContent = 'Infographic';
+        } else {
+          stepCounter.textContent = `Step ${currentModalSlide} of 3`;
+        }
+      }
+    }
+
+    function openModal(initialSlide = '1') {
+      showModalSlide(initialSlide);
+      modal.hidden = false;
+      modal.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeModal() {
+      modal.hidden = true;
+      modal.setAttribute('aria-hidden', 'true');
+      const landing = document.getElementById('landing');
+      if (landing && !landing.hidden) {
+        const details = document.getElementById('guide-details');
+        if (details) details.open = false;
+        const dz = document.getElementById('dropzone');
+        if (dz) dz.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
+    modalTabs.forEach(tab => {
+      tab.addEventListener('click', () => showModalSlide(tab.dataset.modalStep));
+    });
+
+    if (prevBtn) {
+      prevBtn.addEventListener('click', () => {
+        const idx = slideOrder.indexOf(currentModalSlide);
+        if (idx > 0) showModalSlide(slideOrder[idx - 1]);
+      });
+    }
+
+    if (nextBtn) {
+      nextBtn.addEventListener('click', () => {
+        const idx = slideOrder.indexOf(currentModalSlide);
+        if (idx < slideOrder.length - 1) showModalSlide(slideOrder[idx + 1]);
+      });
+    }
+
+    document.querySelectorAll('[data-open-modal]').forEach(trigger => {
+      trigger.addEventListener('click', () => {
+        const step = trigger.getAttribute('data-open-modal');
+        openModal(step || '1');
+      });
+    });
+
+    const fullGuideBtn = document.getElementById('open-full-guide-btn');
+    if (fullGuideBtn) fullGuideBtn.addEventListener('click', () => openModal('all'));
+
+    const headerGuideBtn = document.getElementById('header-guide-btn');
+    if (headerGuideBtn) headerGuideBtn.addEventListener('click', () => openModal('1'));
+
+    const dropGuideBtn = document.getElementById('drop-guide-btn');
+    if (dropGuideBtn) {
+      dropGuideBtn.addEventListener('click', e => {
+        e.preventDefault();
+        e.stopPropagation();
+        const details = document.getElementById('guide-details');
+        if (details) details.open = true;
+        openModal('1');
+      });
+    }
+
+    // Step navigation buttons inside panels
+    document.querySelectorAll('[data-go-step]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetStep = btn.getAttribute('data-go-step');
+        switchStep(targetStep);
+      });
+    });
+
+    // Close guide buttons inside <details>
+    const guideDetails = document.getElementById('guide-details');
+    document.querySelectorAll('.close-guide-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (guideDetails) guideDetails.open = false;
+        const dz = document.getElementById('dropzone');
+        if (dz) dz.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
+    });
+
+    // Quick sample data buttons from inside guide / modal
+    const guideSampleBtn = document.getElementById('guide-sample-btn');
+    if (guideSampleBtn) {
+      guideSampleBtn.addEventListener('click', () => {
+        if (guideDetails) guideDetails.open = false;
+        loadSample();
+      });
+    }
+
+    const modalSampleBtn = document.getElementById('modal-sample-action-btn');
+    if (modalSampleBtn) {
+      modalSampleBtn.addEventListener('click', () => {
+        closeModal();
+        if (guideDetails) guideDetails.open = false;
+        loadSample();
+      });
+    }
+
+    modal.querySelectorAll('[data-close-guide]').forEach(btn => {
+      btn.addEventListener('click', closeModal);
+    });
+
+    window.addEventListener('keydown', e => {
+      if (modal.hidden) return;
+      if (e.key === 'Escape') closeModal();
+      else if (e.key === 'ArrowRight' && nextBtn && !nextBtn.disabled) nextBtn.click();
+      else if (e.key === 'ArrowLeft' && prevBtn && !prevBtn.disabled) prevBtn.click();
+    });
+
+    window.openGuideModal = openModal;
+  }
+
   function setupLanding() {
+    setupWalkthroughGuide();
+
     const landing = document.getElementById('landing');
     if (!landing) return;
     const dz = document.getElementById('dropzone');
     const input = document.getElementById('file-input');
 
     if (dz) {
-      dz.addEventListener('click', e => { if (e.target.id !== 'browse-btn') input && input.click(); });
+      dz.addEventListener('click', e => { if (e.target.id !== 'browse-btn' && e.target.id !== 'drop-guide-btn') input && input.click(); });
       dz.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); input && input.click(); } });
     }
     const browse = document.getElementById('browse-btn');
